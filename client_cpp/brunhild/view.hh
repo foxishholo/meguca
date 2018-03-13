@@ -1,81 +1,110 @@
 #pragma once
 
 #include "events.hh"
-#include "node.hh"
 #include <emscripten/val.h>
-#include <functional>
-#include <sstream>
+#include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace brunhild {
 
-// Base class for views implementing a virtual DOM subtree with diffing of
-// passed Nodes to the current state of the DOM and appropriate pathing.
-// You are not required to use this class for structureing your applications and
-// can freely build your own abstractions on top of the functions in
-// mutations.hh.
-class View {
+// Element attributes. std::nullopt values are omitted from rendered HTML.
+typedef std::unordered_map<std::string, std::string> Attrs;
+
+// Escape a user-submitted unsafe string to protect against XSS and malformed
+// HTML
+std::string escape(const std::string& s);
+
+// Nodes are simple lightweight  logicless representations of HTML nodes. Place
+// into Children and return from View.children().
+struct Node {
+    // Tag of the Element
+    std::string tag;
+
+    // Attributes and properties of the Element
+    Attrs attrs;
+
+    // Children of the element
+    std::vector<Node> children;
+
+    // Inner HTML of the Element. If set, children are ignored
+    std::optional<std::string> inner_html;
+
+    // Creates a Node with optional attributes and children
+    Node(std::string tag, Attrs attrs = {}, std::vector<Node> children = {});
+
+    // Creates a Node with HTML set as the inner contents.
+    // escape: specifies, if the text should be escaped
+    Node(std::string tag, Attrs attrs, std::string html, bool escape = false);
+
+    // Creates a Node with html set as the inner contents.
+    // escape: specifies, if the text should be escaped
+    Node(std::string tag, std::string html, bool escape = false);
+
+    Node() = default;
+};
+
+class View;
+
+// Encapsulates either a list of child Views or Nodes or an HTML string
+struct Children {
+    // Encapsulate a vector of Views as Children
+    Children(std::vector<std::shared_ptr<View>> children);
+
+    // Encapsulate a vector of lightweight Nodes as Children
+    Children(std::vector<Node> children);
+
+    // Encapsulate an HTML string as Children
+    // escape: specifies, if the text should be escape
+    Children(std::string html, bool escape = false);
+
+    Children() = default;
+
+    // Type of contained children types
+    enum class Type { views, nodes, html };
+
+    Type type;
+    std::vector<std::shared_ptr<View>> views;
+    std::vector<Node> nodes;
+    std::string html;
+};
+
+class View : std::enable_shared_from_this<View> {
 public:
-    // Render the root node and its subtree. Chaning the "id" attribute of the
-    // root node will invalidate all event_handlers for this View.
-    virtual Node render() = 0;
+    // View root node and subtree can never mutate. This is guaranteed by the
+    // library user.
+    const bool is_const;
 
-    // Initialize the view with a Node subtree. Separate function, so you can
-    // optimise DOM writes as you see fit (outside your subclass constructor)
-    // and allocate View in static memory.
-    // Calling more then once will overwrite previous state.
-    void init();
+    // Unique ID
+    const unsigned long id;
 
-    // Renders the view's subtree as HTML. After this call, the HTML must be
-    // inserted into a parent view or passed to one of DOM mutation functions.
-    std::string html() const;
+    // Tag of root Node
+    const std::string tag;
 
-    // Same as html(), but writes to a stream to reduce allocations
-    void write_html(std::ostringstream&) const;
+    // tag: root node HTML tag
+    // is_const: the caller guaranties that neither the root element or subtree
+    // of this view will ever mutate
+    View(std::string tag = "div", bool is_const = false);
 
-    // Patch the view's subtree against the updated subtree.
-    // Can only be called after the view has been inserted into the DOM.
+    // Returns root node attributes. Must not contain "id" key.
+    virtual Attrs attrs() { return {}; };
+
+    // Returns children of View
+    virtual Children children() { return {}; }
+
+    // Mark View as needing a diff and patch. Not calling patch() on a modified
+    // view or one of its parents (no matter how many levels up) will not yield
+    // any DOM patches and can produce out of index reads.
     void patch();
 
-    // Removes the View from the DOM and any DOM events listeners
-    virtual void remove();
+    // Scroll the view's element into the browser's viewport
+    void scroll_into_view();
 
-    // Add DOM event handler to view. Must be called after init().
-    // These will persist, until remove() is called, View is destroyed or init()
-    // is called again.
-    // If you have many instances of the same View subclass, it
-    // is  recommended to use register_handler with View collection lookup on
-    // your side to reduce DOM event listener count.
-    // type: DOM event type (click, hover, ...)
-    // selector: any CSS selector the event target should be matched against
-    void on(std::string type, std::string selector, Handler handler);
-
-    ~View() { remove_event_handlers(); }
-
-    // Returns root node id. Only valid after init() has run.
-    std::string id() const { return saved.attrs.at("id"); }
-
-private:
-    std::vector<long> event_handlers;
-
-    // Contains data about the state of the DOM subtree after the last patch
-    // call
-    Node saved;
-
-    // Ensure the Node and it's subtree all have element IDs defined
-    void ensure_id(Node&);
-
-    // Patch an old node against the new one and generate DOM mutations
-    void patch_node(Node& old, Node node);
-
-    // Patch element attributes
-    void patch_attrs(Node& old, Attrs attrs);
-
-    // Patch element's subtree
-    void patch_children(Node& old, Node node);
-
-    void remove_event_handlers();
+protected:
+    // Any custom initialization logic to run after rendering the element for
+    // the first time or reattaching the element to a parent after removal.
+    virtual void on_mount(){};
 };
 }

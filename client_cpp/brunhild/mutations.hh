@@ -1,48 +1,35 @@
 #pragma once
 
-#include <functional>
 #include <string>
 
 namespace brunhild {
 // Append a node to a parent
-void append(std::string id, std::string html);
+void append(unsigned long id, std::string html);
 
 // Prepend a node to a parent
-void prepend(std::string id, std::string html);
+void prepend(unsigned long id, std::string html);
 
 // Insert a node before a sibling
-void before(std::string id, std::string html);
+void before(unsigned long id, std::string html);
 
 // Insert a node after a sibling
-void after(std::string id, std::string html);
+void after(unsigned long id, std::string html);
 
 // Set inner html of an element
-void set_inner_html(std::string id, std::string html);
+void set_inner_html(unsigned long id, std::string html);
 
 // Set outer html of an element
-void set_outer_html(std::string id, std::string html);
+void set_outer_html(unsigned long id, std::string html);
 
 // Remove an element
-void remove(std::string id);
+void remove(unsigned long id);
 
 // Set an element attribute to a value
-void set_attr(std::string id, std::string key, std::string val);
+void set_attr(unsigned long id, std::string key, std::string val);
 
 // Remove an element attribute
-void remove_attr(std::string id, std::string key);
+void remove_attr(unsigned long id, std::string key);
 
 // Scroll and element into the viewport
-void scroll_into_view(std::string id);
-
-// Flush all pending DOM mutations
-extern "C" void flush();
-
-// Function to run before flushing DOM updates. Is run on each call of flush().
-extern void (*before_flush)();
-
-// Function to run after flushing DOM updates. IIs run on each call of flush().
-extern void (*after_flush)();
-
-// Schedule a task to execute after the next mutation flush
-void schedule_task(std::function<void()>);
+void scroll_into_view(unsigned long id);
 }
