@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../brunhild/node.hh"
+#include "../brunhild/view.hh"
 #include <cctype>
 #include <functional>
 #include <optional>

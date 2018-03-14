@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../brunhild/node.hh"
+#include "../../brunhild/view.hh"
 #include "models.hh"
 #include <ctime>
 #include <emscripten/val.h>
@@ -8,10 +8,10 @@
 #include <string_view>
 
 // Checkbox for toggling deleted post display
+// TODO: Less shit delete visibility toggle
 const brunhild::Node delete_toggle = brunhild::Node("input",
     {
-        { "type", "checkbox" },
-        { "class", "deleted-toggle" },
+        { "type", "checkbox" }, { "class", "deleted-toggle" },
     });
 
 // Renders readable elapsed time since Unix timestamp then

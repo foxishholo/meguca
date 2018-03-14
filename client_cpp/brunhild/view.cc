@@ -39,7 +39,7 @@ std::string escape(const std::string& s)
     return out;
 }
 
-Node::Node(std::string tag, Attrs attrs = {}, std::vector<Node> children = {})
+Node::Node(std::string tag, Attrs attrs, std::vector<Node> children)
     : tag(tag)
     , attrs(attrs)
     , children(children)
@@ -58,63 +58,28 @@ Node::Node(std::string tag, std::string html, bool escape)
 {
 }
 
-std::string Node::html() const
-{
-    std::ostringstream s;
-    write_html(s);
-    return s.str();
-}
-
-void Node::write_html(std::ostringstream& s) const
-{
-    s << '<' << tag;
-    for (auto & [ key, val ] : attrs) {
-        s << ' ' << key;
-        if (val != "") {
-            s << "=\"" << val << '"';
-        }
-    }
-    s << '>';
-
-    // These should be left empty and unterminated
-    if (tag == "br" || tag == "wbr") {
-        return;
-    }
-
-    if (inner_html) {
-        s << *inner_html;
-    } else {
-        for (auto& ch : children) {
-            ch.write_html(s);
-        }
-    }
-
-    s << "</" << tag << '>';
-}
-
 Children::Children(std::vector<std::shared_ptr<View>> children)
-    : type(ChildType::views)
-    , ch_views(children)
+    : type(Type::views)
+    , views(children)
 {
 }
 
 Children::Children(std::vector<Node> children)
-    : type(ChildType::nodes)
-    , ch_nodes(children)
+    : type(Type::nodes)
+    , nodes(children)
 {
 }
 
-Children::Children(std::string html, escape)
-    : type(ChildType::html)
+Children::Children(std::string html, bool escape)
+    : type(Type::html)
     , html(escape ? brunhild::escape(html) : html)
 {
 }
 
 View::View(std::string tag, bool is_const)
-    : tag(tag)
-    , is_parent(is_parent)
-    , is_const(is_const)
+    : is_const(is_const)
     , id(id_counter++)
+    , tag(tag)
 {
 }
 }

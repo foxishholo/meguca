@@ -1,5 +1,4 @@
-#include "../../brunhild/mutations.hh"
-#include "../../brunhild/util.hh"
+#include "../../brunhild/view.hh"
 #include "../connection/sync.hh"
 #include "../lang.hh"
 #include "../posts/hide.hh"
@@ -15,6 +14,13 @@
 
 using brunhild::Node;
 using std::string;
+
+class PageView : public brunhild::View {
+    PageView()
+        : View("div")
+    {
+    }
+};
 
 void render_page()
 {
@@ -57,8 +63,7 @@ void set_title(string t) { brunhild::set_inner_html("page-title", t); }
 static Node render_hover_reveal(string tag, string label, string text)
 {
     Node n{
-        tag,
-        { { "class", "hover-reveal" } },
+        tag, { { "class", "hover-reveal" } },
         {
             { "span", { { "class", "act" } }, label },
             { "span", { { "class", "popup-menu glass" } }, text, true },
@@ -78,7 +83,9 @@ void push_board_hover_info(brunhild::Children& ch)
             tag, board_config.notice, lang.ui.at("showNotice")));
     }
     if (board_config.rules != "") {
-        ch.push_back(render_hover_reveal(
-            tag, board_config.rules, lang.ui.at("rules")));
+        ch.push_back(
+            render_hover_reveal(tag, board_config.rules, lang.ui.at("rules")));
     }
 }
+
+void init() {}

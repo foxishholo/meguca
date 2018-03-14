@@ -53,6 +53,9 @@ struct Children {
     // Encapsulate a vector of Views as Children
     Children(std::vector<std::shared_ptr<View>> children);
 
+    // Encapsulate a vector of Views as Children
+    Children(std::vector<View> children);
+
     // Encapsulate a vector of lightweight Nodes as Children
     Children(std::vector<Node> children);
 
