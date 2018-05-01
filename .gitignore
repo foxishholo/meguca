@@ -33,3 +33,7 @@ GeoLite2-Country.mmdb
 *.bc
 client_cpp/*.js
 debug.test
+
+/target
+**/*.rs.bk
+Cargo.lock

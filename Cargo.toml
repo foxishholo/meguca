@@ -1,0 +1,7 @@
+[package]
+name = "brunhild"
+version = "0.1.0"
+authors = ["bakape <scorpid33@gmail.com>"]
+
+[dependencies]
+stdweb = "0.4.4"

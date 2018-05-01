@@ -182,7 +182,7 @@ void Mutations::exec(const string& id)
         return;
     }
 
-    // TODO: Do these loops in one JS call, if possible
+    // TODO: Do these loops in less JS calls, if possible
 
     // Before and after inserts need to happen, even if the element is going to
     // be removed
