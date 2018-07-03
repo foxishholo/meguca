@@ -1,3 +1,3 @@
-[submodule "client_cpp/json"]
-	path = client_cpp/json
-	url = https://github.com/nlohmann/json.git
+[submodule "go/src/meguca/codec/internal/cereal"]
+	path = go/src/meguca/codec/internal/cereal
+	url = https://github.com/USCiLab/cereal.git

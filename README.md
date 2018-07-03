@@ -143,6 +143,7 @@ compiled with:
     * libjpeg
     * postscript
 * ghostscript
+* SWIG >= 3.0
 * git
 
 ### Linux and OSX

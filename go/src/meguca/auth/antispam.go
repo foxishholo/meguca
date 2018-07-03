@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"meguca/codec"
 	"meguca/common"
 	"meguca/config"
 	"sync"
@@ -130,7 +131,7 @@ func IncrementSpamScore(ip string, score uint) (err error) {
 	// Send captcha request to all connected clients
 	if exceeds {
 		var msg []byte
-		msg, err = common.EncodeMessage(common.MessageCaptcha, 0)
+		msg, err = codec.Encode(common.MessageCaptcha, byte(0))
 		if err != nil {
 			return
 		}

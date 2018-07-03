@@ -34,3 +34,5 @@ GeoLite2-Country.mmdb
 client_cpp/*.js
 debug.test
 /config.json
+*_wrap.cxx
+go/src/meguca/codec/internal/codec.go

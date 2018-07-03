@@ -7,7 +7,6 @@ import (
 	"meguca/auth"
 	"meguca/cache"
 	"meguca/common"
-	"meguca/config"
 	"meguca/db"
 	"meguca/websockets/feeds"
 
@@ -52,18 +51,6 @@ func (c *Client) synchronise(data []byte) error {
 				ID:    msg.Thread,
 				Board: msg.Board,
 			}
-		}
-	}
-
-	if msg.ProtocolVersion == common.ProtocolVersion {
-		buf, err := common.EncodeMessage(common.MessageConfigs,
-			config.GetBoardConfigs(msg.Board).BoardConfigs)
-		if err != nil {
-			return err
-		}
-		err = c.send(buf)
-		if err != nil {
-			return err
 		}
 	}
 

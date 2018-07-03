@@ -35,7 +35,7 @@ var (
 type errInvalidPayload []byte
 
 func (e errInvalidPayload) Error() string {
-	return fmt.Sprintf("invalid message: %s", string(e))
+	return fmt.Sprintf("invalid message: %v", e)
 }
 
 // errInvalidFrame denotes an invalid websocket frame in some other way than
@@ -253,7 +253,7 @@ func (c *Client) receiverLoop() {
 // handleMessage parses a message received from the client through websockets
 func (c *Client) handleMessage(msgType int, msg []byte) error {
 	if msgType != websocket.TextMessage {
-		return errInvalidFrame("only text frames allowed")
+		return errInvalidFrame("only binary frames allowed")
 	}
 	if len(msg) < 2 {
 		return errInvalidPayload(msg)

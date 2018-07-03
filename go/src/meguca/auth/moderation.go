@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"meguca/codec"
 	"meguca/common"
 	"sync"
 	"time"
@@ -145,11 +146,7 @@ func SetBans(b ...Ban) {
 // Disconnect all banned websocket clients matching IP from board.
 // /all/ board disconnects all clients globally.
 func DisconnectBannedIP(ip, board string) {
-	msg, err := common.EncodeMessage(common.MessageInvalid,
-		common.ErrBanned.Error())
-	if err != nil {
-		panic(err)
-	}
+	msg, _ := codec.Encode(common.MessageInvalid, common.ErrBanned.Error())
 	for _, cl := range common.GetByIPAndBoard(ip, board) {
 		cl.Send(msg)
 		cl.Close(nil)

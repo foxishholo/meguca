@@ -64,6 +64,7 @@ endif
 generate: generate_clean
 	go get -v github.com/valyala/quicktemplate/qtc github.com/jteeuwen/go-bindata/... github.com/mailru/easyjson/... github.com/bakape/thumbnailer github.com/gorilla/websocket
 	go generate meguca/...
+	cd go/src/meguca/codec/internal; swig -c++ -go -cgo -intgosize 64 codec.i
 
 generate_clean:
 	rm -f go/src/meguca/db/bin_data.go go/src/meguca/lang/bin_data.go go/src/meguca/assets/bin_data.go
@@ -71,6 +72,7 @@ generate_clean:
 	rm -f go/src/meguca/config/*_easyjson.go
 	rm -f go/src/meguca/websockets/feeds/*_easyjson.go
 	rm -f go/src/meguca/templates/*.qtpl.go
+	rm -f go/src/meguca/codec/internal/codec.go go/src/meguca/codec/internal/*_wrap.cxx
 
 server_deps:
 	go list -f '{{.Deps}}' meguca | tr -d '[]' | xargs go get -v
